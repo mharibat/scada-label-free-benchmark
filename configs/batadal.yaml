@@ -1,0 +1,24 @@
+# BATADAL one-class benchmark configuration
+dataset:
+  name: batadal
+  data_dir: data/batadal
+  drop_constant: true          # drops 7 constant features -> 36 kept
+
+windowing:
+  window: 24                   # 24 hours (paper)
+  stride: 1
+  label_strategy: last
+
+protocol:
+  # dataset03 -> all training (normal only); dataset04 -> 50/50 val/test
+  one_class: true
+
+evaluation:
+  threshold: val_f1            # threshold chosen to maximise validation F1
+  primary_metric: f1
+  report_f1pa: false           # F1PA is NOT used as primary (Kim et al. 2022)
+
+seeds: [42, 43, 44, 45, 46]    # multi-seed -> mean +/- std + bootstrap CI
+
+reproducibility:
+  seed: 42

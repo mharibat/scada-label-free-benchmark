@@ -1,0 +1,31 @@
+# Gas Pipeline one-class benchmark configuration
+dataset:
+  name: gas_pipeline
+  data_dir: data/gas
+  file: IanArffDataset.arff
+
+features:
+  n_features: 17               # telemetry features; 3 label columns dropped
+  label_column: binary_result
+  missing_value: "?"           # imputed with 0
+
+preprocessing:
+  scaler: robust_then_minmax   # RobustScaler -> clip[-5,5] -> MinMax[0,1]
+  clip: 5.0
+  windowing: false             # packet-level, no temporal windows
+
+split:
+  train_ratio: 0.70            # chronological
+  val_ratio: 0.10
+  # test = remaining 0.20
+  one_class: true              # training restricted to normal packets
+
+evaluation:
+  threshold: val_f1
+  primary_metric: f1
+  report_f1pa: false
+
+seeds: [42, 43, 44, 45, 46]
+
+reproducibility:
+  seed: 42
