@@ -7,6 +7,7 @@ authors:
     given-names: Mohammad
 version: 1.0.0
 date-released: 2026-08-24
+doi: "10.5281/zenodo.22077541"
 license: MIT
 repository-code: "https://github.com/mharibat/scada-label-free-benchmark"
 url: "https://github.com/mharibat/scada-label-free-benchmark"
@@ -17,3 +18,4 @@ keywords:
   - label-free calibration
   - label efficiency
   - time-series anomaly detection
+
