@@ -1,6 +1,6 @@
 {
-  "title": "Label-Free Threshold Calibration and Label Efficiency in One-Class SCADA Anomaly Detection",
-  "description": "Code, configurations, retained numerical results, and figure data for a reproducible cross-domain benchmark of one-class SCADA anomaly detection. The study evaluates labelled versus normal-only threshold calibration, point-wise and event-level metrics, attack-label budgets, and chronological versus stratified-random splits on BATADAL, Gas Pipeline, and HAI 22.04. Raw third-party datasets are not redistributed.",
+  "title": "Attack-Label-Free Threshold Calibration and Label Efficiency in One-Class SCADA Anomaly Detection: Code and Processed Results",
+  "description": "Version 2.0.0 code, configurations, processed results, representative score arrays, and figures for a reproducible cross-domain benchmark of one-class SCADA anomaly detection. The corrected protocol separates chronological detector fitting from held-out normal-only threshold calibration, audits attack-label budgets using temporal blocks without attack-labelled threshold tuning, and compares chronological with matched stratified-random splitting on BATADAL, Gas Pipeline, and HAI 22.04. Raw third-party datasets are not redistributed.",
   "upload_type": "software",
   "creators": [
     {
@@ -9,14 +9,15 @@
   ],
   "access_right": "open",
   "license": "MIT",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "language": "eng",
   "keywords": [
     "SCADA",
     "industrial control systems",
     "anomaly detection",
-    "label-free calibration",
+    "attack-label-free calibration",
     "label efficiency",
-    "time-series anomaly detection"
+    "chronological evaluation"
   ]
 }
+

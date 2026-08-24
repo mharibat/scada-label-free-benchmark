@@ -73,5 +73,5 @@ under their original terms. `DATA_SOURCES.md` records provenance, retrieval
 URLs, access date, and SHA-256 values for the exact analysed files. The public
 repository need not redistribute raw data.
 
-Software archive: <https://doi.org/10.5281/zenodo.22077541>.
+All-versions software archive: <https://doi.org/10.5281/zenodo.22077540>.
 
