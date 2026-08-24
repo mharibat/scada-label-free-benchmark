@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use this software or its archived results, please cite the Zenodo release."
+title: "Label-Free Threshold Calibration and Label Efficiency in One-Class SCADA Anomaly Detection"
+type: software
+authors:
+  - family-names: Haribat
+    given-names: Mohammad
+version: 1.0.0
+date-released: 2026-08-24
+license: MIT
+repository-code: "https://github.com/mharibat/scada-label-free-benchmark"
+url: "https://github.com/mharibat/scada-label-free-benchmark"
+keywords:
+  - SCADA
+  - anomaly detection
+  - industrial control systems
+  - label-free calibration
+  - label efficiency
+  - time-series anomaly detection

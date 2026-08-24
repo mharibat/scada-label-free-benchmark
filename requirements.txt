@@ -1,0 +1,16 @@
+# Core numerics
+numpy>=1.24
+pandas>=2.0
+scipy>=1.11
+scikit-learn>=1.3
+
+# Deep autoencoders (CPU is fine; no GPU required)
+torch>=2.0
+
+# Config + plotting
+pyyaml>=6.0
+matplotlib>=3.7
+
+# NOTE: only the packages actually imported by this project are listed.
+# (The first release also listed tensorflow, xgboost, scikit-posthocs,
+#  imbalanced-learn, seaborn, tqdm — none were used and they are removed.)
