@@ -7,7 +7,7 @@ Mohammad Haribat.
 ## Citation and permanent archive
 
 - GitHub repository: https://github.com/mharibat/scada-label-free-benchmark
-- Archived release: Zenodo DOI to be added upon publication
+- Archived release: [10.5281/zenodo.22077541](https://doi.org/10.5281/zenodo.22077541)
 - Version: `v1.0.0`
 
 ## What the benchmark evaluates
@@ -80,3 +80,4 @@ HistGradientBoosting label-budget curve reaches F1 values of 0.534, 0.585,
 
 The repository code is released under the MIT License. Dataset copyright and
 licensing remain with the original dataset creators.
+
