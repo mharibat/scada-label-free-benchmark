@@ -1,0 +1,142 @@
+{
+  "rows": [
+    {
+      "dataset": "batadal",
+      "policy": "val_f1",
+      "leader": "Transformer-Autoencoder",
+      "seed": 42,
+      "point_f1_mean_across_seeds": 0.6101504083806936,
+      "block_length": 24,
+      "replicates": 1000,
+      "f1_ci95": [
+        0.34372767857142855,
+        0.7954661410018552
+      ],
+      "block_sensitivity_500_replicates": {
+        "half": [
+          0.3841994014216237,
+          0.774133341783383
+        ],
+        "double": [
+          0.26725067385444745,
+          0.84104728657569
+        ]
+      }
+    },
+    {
+      "dataset": "batadal",
+      "policy": "normal_cal_q995",
+      "leader": "Dense-Autoencoder",
+      "seed": 42,
+      "point_f1_mean_across_seeds": 0.6346083105318074,
+      "block_length": 24,
+      "replicates": 1000,
+      "f1_ci95": [
+        0.4141897032064396,
+        0.7848217752582123
+      ],
+      "block_sensitivity_500_replicates": {
+        "half": [
+          0.4679522546419098,
+          0.7798750655250742
+        ],
+        "double": [
+          0.3419605242627555,
+          0.794116477837408
+        ]
+      }
+    },
+    {
+      "dataset": "gas_pipeline",
+      "policy": "val_f1",
+      "leader": "PCA Reconstruction",
+      "seed": 42,
+      "point_f1_mean_across_seeds": 0.46415770609318996,
+      "block_length": 1000,
+      "replicates": 1000,
+      "f1_ci95": [
+        0.43394878225849254,
+        0.4886140104553779
+      ],
+      "block_sensitivity_500_replicates": {
+        "half": [
+          0.43204000804049675,
+          0.48779882362094856
+        ],
+        "double": [
+          0.4266317517208087,
+          0.48276929242335587
+        ]
+      }
+    },
+    {
+      "dataset": "gas_pipeline",
+      "policy": "normal_cal_q995",
+      "leader": "Mahalanobis Distance",
+      "seed": 42,
+      "point_f1_mean_across_seeds": 0.41616610080961086,
+      "block_length": 1000,
+      "replicates": 1000,
+      "f1_ci95": [
+        0.3665208545707763,
+        0.4610134468768141
+      ],
+      "block_sensitivity_500_replicates": {
+        "half": [
+          0.3678393132917282,
+          0.4653015378667206
+        ],
+        "double": [
+          0.35897127037376203,
+          0.4582607593960325
+        ]
+      }
+    },
+    {
+      "dataset": "hai",
+      "policy": "val_f1",
+      "leader": "Mahalanobis Distance",
+      "seed": 42,
+      "point_f1_mean_across_seeds": 0.2728442728442728,
+      "block_length": 300,
+      "replicates": 1000,
+      "f1_ci95": [
+        0.0,
+        0.4333916589623899
+      ],
+      "block_sensitivity_500_replicates": {
+        "half": [
+          0.0,
+          0.44851686431541654
+        ],
+        "double": [
+          0.0,
+          0.42908094948265363
+        ]
+      }
+    },
+    {
+      "dataset": "hai",
+      "policy": "normal_cal_q995",
+      "leader": "Isolation Forest",
+      "seed": 42,
+      "point_f1_mean_across_seeds": 0.10843145870879956,
+      "block_length": 300,
+      "replicates": 1000,
+      "f1_ci95": [
+        0.0,
+        0.5088108653603566
+      ],
+      "block_sensitivity_500_replicates": {
+        "half": [
+          0.0,
+          0.535273220237266
+        ],
+        "double": [
+          0.0,
+          0.49033961380080915
+        ]
+      }
+    }
+  ]
+}

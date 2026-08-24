@@ -37,7 +37,8 @@ def main():
     Xtr, Xev, y = make_synth()
     half = len(Xev) // 2
     ds = OneClassDataset(
-        X_train=Xtr, y_train=np.zeros(len(Xtr), int),
+        X_train=Xtr[:1200], y_train=np.zeros(1200, int),
+        X_cal=Xtr[1200:], y_cal=np.zeros(len(Xtr) - 1200, int),
         X_val=Xev[:half], y_val=y[:half],
         X_test=Xev[half:], y_test=y[half:],
         feature_names=[f"f{i}" for i in range(Xtr.shape[1])],
@@ -69,3 +70,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

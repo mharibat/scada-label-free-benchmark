@@ -73,19 +73,27 @@ def build_batadal(
 
     X03, y03 = feats(df03), df03["ATT_FLAG"].astype(int).values
     X04, y04 = feats(df04), df04["ATT_FLAG"].astype(int).values
+    fit_end_rows = int(len(X03) * 0.80)
 
     # ---- drop constant features using TRAINING (dataset03) variance ----
     if drop_constant:
-        train_var = X03.var()
+        train_var = X03.iloc[:fit_end_rows].var()
         keep = train_var.index[train_var > 1e-10].tolist()
         dropped = [c for c in feature_cols if c not in keep]
         X03, X04, feature_cols = X03[keep], X04[keep], keep
         if verbose:
             print(f"[BATADAL] dropped {len(dropped)} constant feature(s); kept {len(keep)}")
 
-    # ---- Min-Max scaling fit on TRAINING only ----
+    # ---- Chronological normal-only fit/calibration split (80/20) ----
+    # The calibration tail is not used to fit the scaler or detector.
+    fit_end = fit_end_rows
+    X03_fit, y03_fit = X03.iloc[:fit_end], y03[:fit_end]
+    X03_cal, y03_cal = X03.iloc[fit_end:], y03[fit_end:]
+
+    # ---- Min-Max scaling fit on detector-fitting normals only ----
     scaler = MinMaxScaler()
-    X03s = scaler.fit_transform(X03.values).astype(np.float32)
+    X03_fit_s = scaler.fit_transform(X03_fit.values).astype(np.float32)
+    X03_cal_s = scaler.transform(X03_cal.values).astype(np.float32)
     X04s = scaler.transform(X04.values).astype(np.float32)
 
     # ---- chronological 50/50 split of dataset04 into val / test ----
@@ -94,19 +102,24 @@ def build_batadal(
     Xte_raw, yte_raw = X04s[half:], y04[half:]
 
     # ---- windows ----
-    Xtr, ytr = make_windows(X03s, y03, window, stride, label_strategy)
+    Xtr, ytr = make_windows(X03_fit_s, y03_fit, window, stride, label_strategy)
+    Xcal, ycal = make_windows(X03_cal_s, y03_cal, window, stride, label_strategy)
     Xval, yval = make_windows(Xval_raw, yval_raw, window, stride, label_strategy)
     Xte, yte = make_windows(Xte_raw, yte_raw, window, stride, label_strategy)
 
     # training must be one-class (normal only); dataset03 is normal, but be safe
     normal = ytr == 0
     Xtr, ytr = Xtr[normal], ytr[normal]
+    cal_normal = ycal == 0
+    Xcal, ycal = Xcal[cal_normal], ycal[cal_normal]
 
     ds = OneClassDataset(
-        X_train=Xtr, y_train=ytr, X_val=Xval, y_val=yval, X_test=Xte, y_test=yte,
+        X_train=Xtr, y_train=ytr, X_cal=Xcal, y_cal=ycal,
+        X_val=Xval, y_val=yval, X_test=Xte, y_test=yte,
         feature_names=feature_cols, name="BATADAL", windowed=True,
     )
     if verbose:
         for k, v in ds.info().items():
             print(f"  {k:>14}: {v}")
     return ds
+

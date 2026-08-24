@@ -61,23 +61,33 @@ def build_hai(
     ytr = pd.to_numeric(tr[lab], errors="coerce").fillna(0).astype(int).values
     Xte_df = X(te)
     yte = pd.to_numeric(te[lab], errors="coerce").fillna(0).astype(int).values
+    fit_end_rows = int(len(Xtr_df) * 0.80)
 
     if drop_constant:
-        v = Xtr_df.var()
+        v = Xtr_df.iloc[:fit_end_rows].var()
         keep = v.index[v > 1e-10].tolist()
         feat = keep
         Xtr_df, Xte_df = Xtr_df[keep], Xte_df[keep]
         if verbose:
             print(f"[HAI] kept {len(keep)} non-constant features")
 
+    # Chronological 80/20 normal-only fit/calibration split. Preprocessing is
+    # fitted on the detector-fitting prefix only.
+    fit_end = fit_end_rows
+    Xtr_fit_df, Xtr_cal_df = Xtr_df.iloc[:fit_end], Xtr_df.iloc[fit_end:]
+    ytr_fit, ytr_cal = ytr[:fit_end], ytr[fit_end:]
     scaler = MinMaxScaler()
-    Xtr_s = scaler.fit_transform(Xtr_df.values).astype(np.float32)
+    Xtr_s = scaler.fit_transform(Xtr_fit_df.values).astype(np.float32)
+    Xcal_s = scaler.transform(Xtr_cal_df.values).astype(np.float32)
     Xte_s = scaler.transform(Xte_df.values).astype(np.float32)
 
     # train1 is attack-free -> all training windows are normal
-    Xtr, ytr_w = make_windows(Xtr_s, ytr, window, stride, label_strategy)
+    Xtr, ytr_w = make_windows(Xtr_s, ytr_fit, window, stride, label_strategy)
+    Xcal, ycal_w = make_windows(Xcal_s, ytr_cal, window, stride, label_strategy)
     normal = ytr_w == 0
     Xtr, ytr_w = Xtr[normal], ytr_w[normal]
+    cal_normal = ycal_w == 0
+    Xcal, ycal_w = Xcal[cal_normal], ycal_w[cal_normal]
     # subsample normal training windows for tractable CPU fitting (full val/test kept)
     if max_train and len(Xtr) > max_train:
         rng = np.random.RandomState(seed)
@@ -92,10 +102,12 @@ def build_hai(
     Xte, ytev = make_windows(Xte_s[half:], yte[half:], window, stride, label_strategy)
 
     ds = OneClassDataset(
-        X_train=Xtr, y_train=ytr_w, X_val=Xval, y_val=yval, X_test=Xte, y_test=ytev,
+        X_train=Xtr, y_train=ytr_w, X_cal=Xcal, y_cal=ycal_w,
+        X_val=Xval, y_val=yval, X_test=Xte, y_test=ytev,
         feature_names=feat, name="HAI", windowed=True,
     )
     if verbose:
         for k, v in ds.info().items():
             print(f"  {k:>14}: {v}")
     return ds
+

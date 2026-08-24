@@ -84,21 +84,21 @@ def _summary(per_seed: list[dict]) -> dict:
 def run_method(ds, dataset: str, key: str, seeds: list[int], epochs: int,
                n_boot: int, out_dir: Path) -> dict:
     run_seeds = [seeds[0]] if key in DETERMINISTIC else seeds
-    by_policy = {"val_f1": [], "train_q99": [], "train_q995": []}
+    by_policy = {"val_f1": [], "normal_cal_q99": [], "normal_cal_q995": []}
     fit_times = []
     n_params = 0
     for pos, seed in enumerate(run_seeds):
         print(f"[{dataset}] {key} seed={seed}", flush=True)
         det = make_detector(key, seed=seed, epochs=epochs)
         det.fit(ds.X_train)
-        train_scores = det.score(ds.X_train)
+        cal_scores = det.score(ds.X_cal)
         val_scores = det.score(ds.X_val)
         test_scores = det.score(ds.X_test)
         val_thr, val_best = best_threshold_by_f1(ds.y_val, val_scores)
         thresholds = {
             "val_f1": val_thr,
-            "train_q99": threshold_from_normal_scores(train_scores, 0.99),
-            "train_q995": threshold_from_normal_scores(train_scores, 0.995),
+            "normal_cal_q99": threshold_from_normal_scores(cal_scores, 0.99),
+            "normal_cal_q995": threshold_from_normal_scores(cal_scores, 0.995),
         }
         if pos == 0:
             np.savez_compressed(
@@ -114,7 +114,7 @@ def run_method(ds, dataset: str, key: str, seeds: list[int], epochs: int,
                 ds.y_test, test_scores, threshold,
                 points_per_day=DOMAIN[dataset]["points_per_day"],
             ))
-            if pos == 0:
+            if pos == 0 and n_boot > 0:
                 lo, hi = moving_block_bootstrap_ci(
                     ds.y_test, test_scores, threshold, metric="f1", n_boot=n_boot,
                     block_length=DOMAIN[dataset]["block_length"], seed=seed,
@@ -146,7 +146,8 @@ def parse_args():
     p.add_argument("--epochs", type=int, default=20)
     p.add_argument("--max-train", type=int, default=0,
                    help="HAI only; 0 means the full normal training sequence")
-    p.add_argument("--n-boot", type=int, default=500)
+    p.add_argument("--n-boot", type=int, default=0,
+                   help="Moving-block replicates for the representative first seed; 0 disables")
     p.add_argument("--out", required=True)
     return p.parse_args()
 
@@ -179,3 +180,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

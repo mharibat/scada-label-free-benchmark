@@ -2,7 +2,8 @@
 Standard one-class dataset container returned by every loader.
 
 Convention for one-class (unsupervised) learning:
-  * X_train / y_train  -> NORMAL-only training samples (y_train is all zeros).
+  * X_train / y_train  -> NORMAL-only detector-fitting samples.
+  * X_cal   / y_cal    -> disjoint NORMAL-only threshold-calibration samples.
   * X_val   / y_val    -> validation split WITH anomalies (for threshold tuning).
   * X_test  / y_test   -> held-out test split WITH anomalies (final evaluation).
 
@@ -24,6 +25,8 @@ import numpy as np
 class OneClassDataset:
     X_train: np.ndarray
     y_train: np.ndarray
+    X_cal: np.ndarray
+    y_cal: np.ndarray
     X_val: np.ndarray
     y_val: np.ndarray
     X_test: np.ndarray
@@ -39,6 +42,7 @@ class OneClassDataset:
     def flat(self):
         return (
             self._flat(self.X_train),
+            self._flat(self.X_cal),
             self._flat(self.X_val),
             self._flat(self.X_test),
         )
@@ -52,9 +56,12 @@ class OneClassDataset:
             "n_features": self.X_train.shape[-1],
             "window": self.X_train.shape[1] if self.windowed else 1,
             "train_n": int(len(self.y_train)),
+            "cal_n": int(len(self.y_cal)),
             "val_n": int(len(self.y_val)),
             "test_n": int(len(self.y_test)),
             "train_anom_%": rate(self.y_train),
+            "cal_anom_%": rate(self.y_cal),
             "val_anom_%": rate(self.y_val),
             "test_anom_%": rate(self.y_test),
         }
+

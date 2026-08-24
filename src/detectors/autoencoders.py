@@ -141,12 +141,11 @@ class _AEDetector:
         np.random.seed(self.seed)
         t0 = time.time()
         T = self._prep(X)
-        # internal normal-only validation slice for early stopping
+        # Chronological normal-only validation tail for early stopping. Keeping
+        # the order avoids mixing nearby temporal regimes across the split.
         n = len(T)
         n_val = max(1, int(n * 0.1))
-        perm = torch.randperm(n, generator=torch.Generator().manual_seed(self.seed))
-        val_idx, tr_idx = perm[:n_val], perm[n_val:]
-        Ttr, Tval = T[tr_idx], T[val_idx]
+        Ttr, Tval = T[:-n_val], T[-n_val:]
 
         self.model = self._build(X)
         self.n_params = _count_params(self.model)
@@ -244,3 +243,4 @@ class TransformerAEDetector(_AEDetector):
             F, W, d_model=self.kw.get("d_model", 32),
             nhead=self.kw.get("nhead", 4), layers=self.kw.get("layers", 2),
         )
+

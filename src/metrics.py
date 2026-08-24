@@ -7,8 +7,8 @@ Methodological stance (unchanged from the paper):
   * AUC and AUCPR are reported as threshold-independent rankers.
   * F1PA is provided ONLY as a transparency check, never as primary.
 
-The operating threshold is always selected on the VALIDATION set and then
-applied unchanged to the test set (no test-set leakage).
+Thresholds are either selected on a labelled validation set or estimated from
+a separate normal-only calibration set, then applied unchanged to the test set.
 """
 from __future__ import annotations
 
@@ -78,7 +78,7 @@ def best_threshold_by_f1(
 
 
 def threshold_from_normal_scores(y_score: np.ndarray, quantile: float = 0.995) -> float:
-    """Label-free operating threshold calibrated only on normal training scores."""
+    """Attack-label-free threshold estimated from held-out normal scores."""
     if not 0.0 < quantile < 1.0:
         raise ValueError("quantile must be strictly between zero and one")
     scores = np.asarray(y_score, dtype=float)
@@ -242,3 +242,4 @@ def moving_block_bootstrap_ci(
     if not vals:
         return float("nan"), float("nan")
     return float(np.percentile(vals, 2.5)), float(np.percentile(vals, 97.5))
+

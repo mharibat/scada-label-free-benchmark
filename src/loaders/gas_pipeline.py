@@ -85,30 +85,37 @@ def build_gas_pipeline(
     va_idx = np.arange(n_train, n_train + n_val)
     te_idx = np.arange(n_train + n_val, T)
 
-    # one-class: training uses NORMAL packets only
+    # One-class fit/calibration data are chronological normal packets from the
+    # first 70%. The last 20% of those normals is held out from every fitting
+    # step, including preprocessing, and is used only for quantile calibration.
     tr_normal = tr_idx[y[tr_idx] == 0]
+    fit_end = int(len(tr_normal) * 0.80)
+    fit_normal, cal_normal = tr_normal[:fit_end], tr_normal[fit_end:]
 
     # RobustScaler fit on training-normal, then clip + Min-Max to [0,1]
     rs = RobustScaler()
-    rs.fit(X[tr_normal])
+    rs.fit(X[fit_normal])
 
     def transform(A):
         A = rs.transform(A)
         A = np.clip(A, -clip, clip)
         return A
 
-    Xtr = transform(X[tr_normal])
+    Xtr = transform(X[fit_normal])
+    Xcal = transform(X[cal_normal])
     Xva = transform(X[va_idx])
     Xte = transform(X[te_idx])
 
     mm = MinMaxScaler()
     mm.fit(Xtr)
     Xtr = mm.transform(Xtr).astype(np.float32)
+    Xcal = mm.transform(Xcal).astype(np.float32)
     Xva = mm.transform(Xva).astype(np.float32)
     Xte = mm.transform(Xte).astype(np.float32)
 
     ds = OneClassDataset(
         X_train=Xtr, y_train=np.zeros(len(Xtr), dtype=np.int64),
+        X_cal=Xcal, y_cal=np.zeros(len(Xcal), dtype=np.int64),
         X_val=Xva, y_val=y[va_idx].astype(np.int64),
         X_test=Xte, y_test=y[te_idx].astype(np.int64),
         feature_names=FEATURE_COLUMNS, name="Gas Pipeline", windowed=False,
@@ -153,3 +160,4 @@ def build_gas_supervised(
     return (mm.transform(Xtr).astype(np.float32), y[tr_idx].astype(np.int64),
             mm.transform(Xva).astype(np.float32), y[va_idx].astype(np.int64),
             mm.transform(Xte).astype(np.float32), y[te_idx].astype(np.int64))
+
